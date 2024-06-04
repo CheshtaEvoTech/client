@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../Core/_request";
+import { UserContext } from "../../context/UserContext";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      try {
+        console.log(values);
+        const response = await login(values.email, values.password);
+        console.log("response", response);
+        setUser(response.data.username);
+        navigate("/BookListing");
+      } catch (err) {
+        console.log(err);
+      }
     },
   });
 

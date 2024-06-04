@@ -7,11 +7,9 @@ export default function PrivateRoutes() {
   return (
     <div>
       <Routes>
-        <Route>
-          {/* <Route path="marketing/marketing1" element={<DashboardWrapper />} /> */}
-          <Route path="Booklisting" element={<BookListing />} />
-          <Route path="BookDetail" element={<BookDetail />} />
-        </Route>
+        <Route path="/" element={<Navigate to="BookListing" />} />
+        <Route path="BookListing" element={<BookListing />} />
+        <Route path="book/:id" element={<BookDetail />} />
       </Routes>
     </div>
   );

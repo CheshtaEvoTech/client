@@ -13,8 +13,8 @@ export default function Pagination({
   }
 
   return (
-    <nav>
-      <ul className="pagination justify-content-center">
+    <nav className="mt-6 mb-6">
+      <ul className="pagination justify-content-center ">
         {pageNumbers.map((number) => (
           <li
             key={number}

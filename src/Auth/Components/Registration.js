@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "../Core/_request";
 
 export default function Registration() {
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      try {
+        console.log(values);
+        const response = await register(
+          values.email,
+          values.username,
+          values.password
+        );
+        navigate("/auth/login");
+      } catch (err) {
+        console.log(err);
+      }
     },
   });
 
@@ -30,12 +43,12 @@ export default function Registration() {
           </label>
           <input
             className="form-control bg-transparent"
-            id="name"
-            name="name"
+            id="username"
+            name="username"
             type="text"
             placeholder="Enter your username"
             onChange={formik.handleChange}
-            value={formik.values.name}
+            value={formik.values.username}
           />
         </div>
 

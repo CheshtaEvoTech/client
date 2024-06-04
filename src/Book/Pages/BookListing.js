@@ -1,52 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
 import Search from "../Components/Search";
+import { getAllBooks } from "../Core/_request";
+import Navbar from "../Components/Navbar";
 
 export default function BookListing() {
+  const [books, setBooks] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortCriteria, setSortCriteria] = useState("title");
-  const books = [
-    {
-      id: 2,
-      title: "Book Title 2",
-      author: "Author 2",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    {
-      id: 1,
-      title: "Book Title 1",
-      author: "Author",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    {
-      id: 3,
-      title: "Book Title 3",
-      author: "bb Author 3",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    {
-      id: 4,
-      title: "Book Title 4",
-      author: "zzAuthor 4",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    {
-      id: 5,
-      title: "Book Title 5",
-      author: "Author 5",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    {
-      id: 6,
-      title: "Book Title 6",
-      author: "Author 6",
-      img: "https://www.thewowstyle.com/wp-content/uploads/2015/01/images-of-nature-4.jpg",
-    },
-    // Add more books as needed
-  ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllBooks();
+        console.log("book", response);
+        setBooks(response);
+        console.log("book", books);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      if (searchTerm) {
+        const response = await fetch(
+          `http://localhost:5000/book/search?query=${searchTerm}`
+        );
+        console.log("response", response);
+        const result = await response.json();
+
+        setBooks(result);
+      } else {
+        setBooks(books);
+      }
+    };
+
+    fetchBooks();
+  }, [searchTerm]);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 3;
+  const booksPerPage = 6;
 
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
@@ -70,46 +68,32 @@ export default function BookListing() {
 
   return (
     <div>
-      <nav class="d-flex  navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-          <a class="navbar-brand" href="#">
-            BookNest
-          </a>
+      <Navbar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortCriteria={sortCriteria}
+        setSortCriteria={setSortCriteria}
+        showSearchInput={true}
+      />
 
-          <div className="d-flex">
-            <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-            <div className="col-6 d-flex items-center justify-center ">
-              <label
-                htmlFor="sortCriteria"
-                className="form-label whitespace-nowrap "
-              >
-                Sort By:
-              </label>
-              <select
-                id="sortCriteria"
-                className="form-select ms-3"
-                value={sortCriteria}
-                onChange={(e) => setSortCriteria(e.target.value)}
-              >
-                <option value="title">Title</option>
-                <option value="author">Author</option>
-                <option value="rating">Average Rating</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <div className="row my-5 px-4 py-5 gap-4 bg-light justify-content-center">
+      <div className="row mt-5 px-4 pt-5 gap-4 bg-light justify-content-center pb-5">
         {currentBooks.map((book) => (
           <Link
-            to={`/book/${book.id}`}
-            key={book.id}
+            to={`/book/${book._id}`}
+            key={book._id}
             className="col-md-5 col-xl-3 card text-decoration-none text-dark"
           >
-            <img src={book.img} className="card-img-top p-4" alt="img" />
-            <div className="card-body">
-              <div className="fs-3 fw-bold text-dark">{book.title}</div>
-              <p className="text-gray-400 fw-semibold fs-5 mt-1 mb-2">
+            <div className=" d-flex justify-center  items-center">
+              <img
+                src={book.coverImageUrl}
+                className="card-img-top h-3/4 w-3/4 mb-0"
+                alt="img"
+              />
+            </div>
+
+            <div className="my-3">
+              <div className="fs-3 fw-bold text-dark ">{book.title}</div>
+              <p className="text-gray-400 fw-semibold fs-5 mt-1 ">
                 {book.author}
               </p>
             </div>
